@@ -1,0 +1,11 @@
+a{
+    text-decoration: none;
+    padding: 0.8rem;
+    color: black;
+    font-family: 'Fira Sans', sans-serif;
+    font-weight: 500;
+}
+a.active{
+    color: rgba(29, 78, 137);
+    text-decoration: underline;
+}
