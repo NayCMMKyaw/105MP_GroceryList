@@ -14,7 +14,7 @@ const listWrapper = {
 }
 
 
-function ItemList({ toBuy, setState, state }) {
+function ItemList({ item, setState, state }) {
 
 const handleCheck =(e)=>{
   if(e.target.checked){
@@ -30,7 +30,7 @@ const handleCheck =(e)=>{
         variant='body1' 
         component='p'
         >
-          {toBuy}
+          {item.name}
         </Typography>
         <Box sx={{ flexGrow: 1}}></Box>
         

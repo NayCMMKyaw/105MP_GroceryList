@@ -9,6 +9,7 @@ const cors = require('cors');
 
 const port = 8000;
 const app = express();
+const jsonParser = bodyParser.json({ type: 'application/json' });
 
 const connection = mysql.createConnection({
     host: 'server2.bsthun.com',
@@ -23,7 +24,7 @@ connection.connect(() => {
 //export connection to use in other files
 global.connection = connection;
 app.use(express.json());
-app.use(bodyParser.json({ type: 'application/json' }));
+app.use(jsonParser);
 //connect with frontend
 app.use(
     cors({
@@ -70,7 +71,7 @@ app.get('/me', require('./getUser.js'));
 
 app.get('/items', require('./getAllLists.js'));
 
-app.post('/item', require('./createItem.js'));
+app.post('/item', jsonParser, require('./createItem.js'));
 
 app.delete('/item', require('./deleteItem.js'));
 

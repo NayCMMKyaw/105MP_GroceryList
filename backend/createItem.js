@@ -11,7 +11,7 @@ module.exports = (req, res) => {
             });
         } else {
             const newItem = {
-                id: result.id,
+                // id: result.id,
                 name: item,
                 user_id: userId,
             }

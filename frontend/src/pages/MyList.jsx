@@ -52,43 +52,29 @@ const headingStyle = {
   };
 
 function MyList() {
-
-  const [toBuy, setToBuy ] = useState([]);
+  const [items, setItems] = useState([]);
   const {status, setStatus, user} = useContext(GlobalContext);
-
-//state for input validation
   const [toBuyInput, setToBuyInput] = useState("");
 
-  // useEffect(() => {
-  //   // Fetch the initial list from the backend when the component mounts
-  //   fetchItems();
-  // }, [user]);
+  useEffect(() => {
+    // Fetch the initial list from the backend when the component renders
+    Axios.get('/items')
+    .then((response)=>{setItems(response.data.items)})
+    .catch((error)=>{console.error('Error getting items', error)});
+  }, [user]);
 
-  // const fetchItems = async () => {
-  //   try {
-  //     const response = await Axios.get('/items', {withCredentials: true});
-  //     if (response.data.success) {
-  //       setToBuy(response.data.data);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error fetching items:', error);
-  //   }
-  // };
 
 //when Additem button is clicked
   const handleAdd = async () => {
     if(!toBuyInput) return;
     try{
       const response = await Axios.post('/item', { item: toBuyInput});
-      console.log(response);
       if(response.data.success) {
         setStatus({
           severity: 'success',
           msg: 'Created item successfully'
         });
-        
-        setToBuy((prev) => [...prev, response.data.data.name]);
-        console.log(toBuy);
+        setItems((prev) => [...prev, response.data.data]);
         setToBuyInput('');  //set the textfield blank again
       }
     } catch (error) {
@@ -104,9 +90,10 @@ function MyList() {
         });
       }
     }
-  }
+  };
 
-  const generatekey = () => {
+
+  const generateKey = () => {
     return Math.random();
   };
   return (
@@ -154,19 +141,19 @@ function MyList() {
             </Box>  
           </Box>
           {/* Render ToBuy into ItemList */}
-          {toBuy.map((item, index)=>{
+          {items.map((item)=>{
             return(
               <ItemList 
-                toBuy={item}
-                key={index}
-                setState={setToBuy}
-                state={toBuy}
+                item={item}
+                key={item.id}
+                setState={setItems}
+                state={items}
               />
             )
           })}
         </Box>
         {status ? (
-          <SnackBarMessage key={generatekey()} open={status.open} severity={status.severity} message={status.msg} />
+          <SnackBarMessage key={generateKey()} open={status.open} severity={status.severity} message={status.msg} />
         ) : null}
       
     </div>
