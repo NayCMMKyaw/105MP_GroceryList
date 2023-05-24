@@ -2,7 +2,7 @@ module.exports = (req, res) => {
     const { userId } = res.locals;
     const {item} = req.body;
 
-    connection.query("INSERT INTO items (name, user_id) VALUES (?, ?)", [item, userId], (err, rows) => {
+    connection.query("INSERT INTO items (name, user_id) VALUES (?, ?)", [item, userId], (err, result) => {
         if(err) {
             return res.json({
                 success: false,
@@ -10,14 +10,16 @@ module.exports = (req, res) => {
                 error: err.message,
             });
         } else {
-            if (rows) {
+            const newItem = {
+                id: result.id,
+                name: item,
+                user_id: userId,
+            }
                 res.json({
                     success: true,
-                    data: {
-                        message: "Item created"
-                    },
+                    data: newItem,
+                    message: "Item created",
                 });
-            }
         }
     });
 };

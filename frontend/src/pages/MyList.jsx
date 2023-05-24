@@ -1,10 +1,14 @@
-import React, { useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { styled } from '@mui/material/styles'
 import { Typography, Box, TextField, Button, CssBaseline } from '@mui/material'
 // import { createTheme, ThemeProvider } from '@mui/material/styles'
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import ItemList from '../components/ItemList';
 import Nav from '../components/Nav';
+import Axios from '../components/axios_client';
+import { AxiosError } from 'axios';
+import SnackBarMessage from '../components/SnackBar';
+import { GlobalContext } from '../context/GlobalContext';
 
 const MyButton = styled(Button)({
   backgroundColor: '#00b2ca',
@@ -50,26 +54,61 @@ const headingStyle = {
 function MyList() {
 
   const [toBuy, setToBuy ] = useState([]);
+  const {status, setStatus, user} = useContext(GlobalContext);
+
 //state for input validation
   const [toBuyInput, setToBuyInput] = useState("");
-  const [toBuyError, setToBuyError] = useState(true);
 
-//when textfield is touched/filled
-  const handleInput = e => {
-    setToBuyInput(e.target.value);
-    if(e.target.value === null || e.target.value === ''){
-      setToBuyError(true);
-    }else {
-      setToBuyError(false);
+  // useEffect(() => {
+  //   // Fetch the initial list from the backend when the component mounts
+  //   fetchItems();
+  // }, [user]);
+
+  // const fetchItems = async () => {
+  //   try {
+  //     const response = await Axios.get('/items', {withCredentials: true});
+  //     if (response.data.success) {
+  //       setToBuy(response.data.data);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching items:', error);
+  //   }
+  // };
+
+//when Additem button is clicked
+  const handleAdd = async () => {
+    if(!toBuyInput) return;
+    try{
+      const response = await Axios.post('/item', { item: toBuyInput});
+      console.log(response);
+      if(response.data.success) {
+        setStatus({
+          severity: 'success',
+          msg: 'Created item successfully'
+        });
+        
+        setToBuy((prev) => [...prev, response.data.data.name]);
+        console.log(toBuy);
+        setToBuyInput('');  //set the textfield blank again
+      }
+    } catch (error) {
+      if( error instanceof AxiosError && error.response) {
+        setStatus({
+          severity: 'error',
+          msg: error.response.data.error
+        });
+      }else {
+        setStatus({
+          severity: 'error',
+          msg: error.message
+        });
+      }
     }
   }
-//when Additem button is clicked
-  const handleAdd = () => {
-    setToBuy([...toBuy, toBuyInput]); //put data into tobuy
-    setToBuyInput('');  //set the textfield blank again
-    setToBuyError(true);
-  }
 
+  const generatekey = () => {
+    return Math.random();
+  };
   return (
     <div>
       <CssBaseline />
@@ -94,7 +133,7 @@ function MyList() {
                 width: {xs:"90vw", sm: '80%'},
                 margin: { sm: 'auto'},
               }}
-              onChange={handleInput}
+              onChange={(e)=>setToBuyInput(e.target.value)}
               value={toBuyInput}
             />
             <Box sx={{ 
@@ -109,7 +148,6 @@ function MyList() {
                 sx={{ m: 1}} 
                 startIcon={<AddRoundedIcon/>} 
                 onClick={handleAdd}
-                disabled={toBuyError}
               >
               Add Item
               </MyButton>
@@ -127,7 +165,9 @@ function MyList() {
             )
           })}
         </Box>
-      
+        {status ? (
+          <SnackBarMessage key={generatekey()} open={status.open} severity={status.severity} message={status.msg} />
+        ) : null}
       
     </div>
   )

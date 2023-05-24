@@ -1,10 +1,15 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useContext } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { styled } from '@mui/material/styles';
 import { Box, Typography, CssBaseline, TextField, Button, Grid } from '@mui/material'
 import AddShoppingCartRoundedIcon from '@mui/icons-material/AddShoppingCartRounded';
 import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
+import Axios from '../components/axios_client';
+import { AxiosError } from 'axios';
+import { GlobalContext } from '../context/GlobalContext';
+import SnackBarMessage from '../components/SnackBar';
+
 
 const formWrapper = {
   background: '#FFFFFF',
@@ -57,23 +62,72 @@ const MyLink = styled(Link)({
 })
 
 function Login() {
+  const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [password, setPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const {setUser, user, status, setStatus} = useContext(GlobalContext);
+  const navigate = useNavigate();
 
-const[account, setAccount] = useState({
-  email: '',
-  password: '',
-})
+  //validate 
+  const validateForm = () => {
+    let isValid = true;
+    if (!email) {
+      setEmailError('Email is required');
+      isValid = false;
+    }
+    if (!password) {
+      setPasswordError('Password is required');
+      isValid = false;
+    }
+    return isValid;
+  };
 
-  const handleChange = e => {
-    const target = e.currentTarget;
-    setAccount({
-      ...account,
-      [target.name] : target.value
-    })
-  }
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
-  }
+    if(!validateForm()) return;
+    //integrate
+    try{
+      const response = await Axios.post('/login', {
+        email,
+        password,
+      });
+      if (response.data.success) {
+        setEmail('');
+        setPassword('');
+        setUser({
+          username: response.data.data.username,
+          email: response.data.data.email,
+        });
+        setStatus({
+          msg:response.data.message,
+          severity:'success'
+        });
+        console.log(user);
+      }
+    } catch (e) {
+      setEmail('');
+      setPassword('');
+      if(e instanceof AxiosError) {
+        if(e.response)
+        return setStatus({
+          msg:e.response.data.message,
+          severity:'error',
+        });
+      }
+      return setStatus({
+        msg:e.message,
+        severity:'error',
+      });
+    }
+    if (user) {
+      navigate('/mylist');
+    }
+  };
 
+  const generatekey = () => {
+    return Math.random();
+  };
 
   return (
     <Box sx={{ backgroundColor: 'rgba(255, 245, 237, 0.5)', height: '100vh' }}>
@@ -121,29 +175,33 @@ const[account, setAccount] = useState({
         }}>
           Login
         </Typography>
-        <Box component='form' onSubmit={handleSubmit}>
+        <Box >
           <CssTextField 
             margin='normal'
             size='small'
-            required
             fullWidth
-            onChange={handleChange}
+            onChange={(e)=>setEmail(e.target.value)}
             label='Email'
             name='email'
             type='email'
+            value={email}
+            error={emailError !== ''}
+            helperText={emailError}
           />
           <CssTextField 
             margin='normal'
             size='small'
-            required
             fullWidth
-            onChange={handleChange}
+            onChange={(e)=>setPassword(e.target.value)}
             label='Password'
             name='password'
             type='password'
+            value={password}
+            error={passwordError !== ''}
+            helperText={passwordError}
           />
           <MyButton
-            type='submit'
+            onClick={handleSubmit}
             fullWidth
             variant='contained'
             sx={{ mt: 3, mb: 2}}
@@ -167,6 +225,9 @@ const[account, setAccount] = useState({
       </Box>
       <Typography sx={TermsStyle}>By signing in, you agree to our <span style={{ color: '#00b2ca'}}>Terms of Use</span> & <span style={{ color: '#00b2ca'}}>Privacy Policy</span>.</Typography>
       </Box>
+      {status ? (
+          <SnackBarMessage key={generatekey()} open={status.open} severity={status.severity} message={status.msg} />
+        ) : null}
     </Box>
   )
 }

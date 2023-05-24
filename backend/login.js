@@ -2,7 +2,7 @@ const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-module.exports = ( req, res) => {
+module.exports = async( req, res) => {
     const email = req.body.email;
     const password = req.body.password;
     
@@ -11,7 +11,7 @@ module.exports = ( req, res) => {
         if (err) {
             return res.json({
                 success: false,
-                data: null,
+                message: 'Internal Server error',
                 error: err.message,
             });
         }
@@ -33,13 +33,13 @@ module.exports = ( req, res) => {
                 res.json({
                     success: true,
                     message: 'User authorized',
-                    user: rows[0],
+                    data: rows[0],
                 });
             } else {
-                res.json({
-                    success: true,
-                    message: 'Email or Password is incorrect',
-                })
+                return res.status(401).json({
+                    success: false,
+                    message: 'Email or password is incorrect'
+                  });
             }
         }
     })

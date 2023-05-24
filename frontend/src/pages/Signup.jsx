@@ -1,9 +1,14 @@
-import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState, useEffect, useMemo, useContext } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { styled } from '@mui/material/styles';
 import { Box, Typography, CssBaseline, TextField, Button, Grid } from '@mui/material'
 import AddShoppingCartRoundedIcon from '@mui/icons-material/AddShoppingCartRounded';
 import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
+import Axios from '../components/axios_client';
+import { AxiosError } from 'axios';
+import { GlobalContext } from '../context/GlobalContext';
+import Login from './Login';
+import SnackBarMessage from '../components/SnackBar';
 
 const formWrapper = {
   background: '#FFFFFF',
@@ -56,16 +61,19 @@ const MyLink = styled(Link)({
 })
 
 function Signup() {
+  const [account, setAccount] = useState({
+    username: '',
+    email: '',
+    password: '',
+    rePassword: '',
+  });
+  const [usernameError, setUsernameError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [rePasswordError, setRePasswordError] = useState('');
+  const {status, setStatus} = useContext(GlobalContext);
+  const navigate = useNavigate();
 
-const[account, setAccount] = useState({
-  username: '',
-  email: '',
-  password: '',
-  rePassword: '',
-});
-//for error messages while validating
-const[errors, setErrors] = useState({});
-const[showErrors, setShowErrors] = useState(false);
 
 //update values
 const handleChange = e => {
@@ -74,52 +82,90 @@ const handleChange = e => {
     ...account,
     [target.name] : target.value
   });
-}
+};
+const{ username, email, password, rePassword } = account;
+
 //validate conditions
-useEffect(() => {
-  const{ username, email, password, rePassword } = account;
-  const errors = {};
-
-  if(username.trim().length > 30 ) {
-    errors.username = "Username should only be 30 characters";
-  }
-
-  if(!/\S+@\S+\.\S+/.test(email)) {
-    errors.email = "Invalid email format";
-  }
-
-  if(password.length < 8 || 
-    !/[A-Z]/.test(password) ||
-    !/[a-z]/.test(password) ||
-    !/\d/.test(password)) {
-    errors.password = "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one digit";
-  }
-
-  if(password !== rePassword) {
-    errors.rePassword = "Passwords do not match";
-  }
-
-  setErrors(errors);
-},[account]);
-
- 
-  const handleSubmit = e => {
-    e.preventDefault();
-    setShowErrors(true); //show error only on submission
-    if (Object.keys(errors).length === 0) {
-      console.log(account);
-      // setAccount({
-      //   username: '',
-      //   email: '',
-      //   password: '',
-      //   password2: '',
-      // });
-      // setShowErrors(false);
-    }else{
-      console.log(errors);
+const validateForm = () => {
+  let isValid = true;
+    // check user
+    if (!username) {
+      setUsernameError('Username is required');
+      isValid = false;
     }
-  }
+    if (username.trim().length > 30) {
+      setUsernameError('Username should only be 30 characters');
+      isValid = false;
+    }
+    // check email
+    if (!email) {
+      setEmailError('Email is required');
+      isValid = false;
+    }
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setEmailError('Invalid email format');
+      isValid = false;
+    }
+    // check password
+    if (!password) {
+      setPasswordError('Password is required');
+      isValid = false;
+    }
+    if (!rePassword) {
+      setRePasswordError('Confirm password is required');
+    }
+    if (password !== rePassword) {
+      setPasswordError('Password is not match');
+      setAccount((prevState) => ({
+        ...prevState,
+        password: '',
+        rePassword: '',
+      }));
+      isValid = false;
+    }
 
+    return isValid;
+}
+
+  const handleSignup = async e => {
+    e.preventDefault();
+    if(!validateForm()) return;
+    try{
+      const response = await Axios.post('/signup',{
+        username,
+        email,
+        password,
+      });
+      if(response.data.success) {
+        setStatus({
+          msg: response.data.message,
+          severity: 'success',
+        });
+        navigate('/login');
+      }
+    } catch (e) {
+      setAccount((prevState) => ({
+        ...prevState,
+        password: '',
+        rePassword: '',
+      }));
+      if(e instanceof AxiosError) {
+        if(e.response)
+        return setStatus({
+          msg:e.response.data.message,
+          severity:'error',
+        });
+      }
+      return setStatus({
+        msg:e.message,
+        severity:'error',
+      });
+    }
+  };
+  
+  const generatekey = () => {
+    return Math.random();
+  };
   return (
     <Box sx={{ backgroundColor: 'rgba(255, 245, 237, 0.5)', height: '100%' }}>
       <CssBaseline />
@@ -158,60 +204,60 @@ useEffect(() => {
         }}>
           Sign up
         </Typography>
-        <Box component='form' onSubmit={handleSubmit} autoComplete='off'>
+        <Box >
           <CssTextField 
             margin='normal'
             size='small'
-            required
             fullWidth
             onChange={handleChange}
             label='Username'
             name='username'
             type='text'
-            value={account.username}
+            value={username}
+            error={usernameError !== ''}
+            helperText={usernameError}
           />
-          {showErrors && errors.username && <Typography sx={{color: 'red'}}>{errors.username}</Typography>}
           <CssTextField 
             margin='normal'
             size='small'
-            required
             fullWidth
             onChange={handleChange}
             label='Email'
             name='email'
             type='email'
-            value={account.email}
+            value={email}
+            error={emailError !== ''}
+            helperText={emailError}
           />
-          {showErrors && errors.email && <Typography sx={{color: 'red'}}>{errors.email}</Typography>}
           <CssTextField 
             margin='normal'
             size='small'
-            required
             fullWidth
             onChange={handleChange}
             label='Password'
             name='password'
             type='password'
-            value={account.password}
+            value={password}
+            error={passwordError !== ''}
+            helperText={passwordError}
           />
-          {showErrors && errors.password && <Typography sx={{color: 'red'}}>{errors.password}</Typography>}
           <CssTextField 
             margin='normal'
             size='small'
-            required
             fullWidth
             onChange={handleChange}
             label='Confirm Password'
             name='rePassword'
             type='password'
-            value={account.rePassword}
+            value={rePassword}
+            error={rePasswordError !== ''}
+            helperText={rePasswordError}
           />
-          {errors.rePassword && <Typography sx={{color: 'red'}}>{errors.rePassword}</Typography>}
           <MyButton
-            type='submit'
             fullWidth
             variant='contained'
             sx={{ mt: 3, mb: 2}}
+            onClick={handleSignup}
           >
             Sign up
           </MyButton>
@@ -232,6 +278,9 @@ useEffect(() => {
       </Box>
       <Typography sx={TermsStyle}>By signing in, you agree to our <span style={{ color: '#00b2ca'}}>Terms of Use</span> & <span style={{ color: '#00b2ca'}}>Privacy Policy</span>.</Typography>
       </Box>
+      {status ? (
+          <SnackBarMessage key={generatekey()} open={status.open} severity={status.severity} message={status.msg} />
+        ) : null}
     </Box>
   )
 }

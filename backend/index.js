@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const bcrypt = require ('bcrypt');
 var jwt = require('jsonwebtoken');
+const cors = require('cors');
 
 const port = 8000;
 const app = express();
@@ -21,17 +22,18 @@ connection.connect(() => {
 });
 //export connection to use in other files
 global.connection = connection;
-
-//connect with frontend
-// app.use(
-//     cors({
-//       origin: ['http://localhost:5174', 'http://localhost:5173'],
-//       credentials: true,
-//     })
-//   );
-app.use(bodyParser.json({ type: 'application/json' }));
-app.use(cookieParser());
 app.use(express.json());
+app.use(bodyParser.json({ type: 'application/json' }));
+//connect with frontend
+app.use(
+    cors({
+      origin: ['http://localhost:5173', 'http://localhost:5174'],
+      credentials: true,
+    })
+  );
+
+app.use(cookieParser());
+
 
 //for home page
 app.get('/', require('./welcome.js'));
@@ -66,7 +68,7 @@ app.use((req, res, next) => {
 
 app.get('/me', require('./getUser.js'));
 
-app.get('/mylist', require('./getAllLists.js'));
+app.get('/items', require('./getAllLists.js'));
 
 app.post('/item', require('./createItem.js'));
 

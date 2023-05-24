@@ -22,9 +22,7 @@ module.exports= async(req,res) => {
             if (rows) {
                 res.json({
                     success: true,
-                    data: {
-                        message: "User is created"
-                    }
+                    message: "User is created",
                 })
             }
         }
