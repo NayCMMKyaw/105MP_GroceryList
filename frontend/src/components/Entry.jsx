@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Box, Button, CssBaseline, Typography } from '@mui/material'
 import { useNavigate } from 'react-router-dom';
+import { GlobalContext } from '../context/GlobalContext';
 
 const headingStyle = {
     fontFamily: 'Fira Sans',
@@ -29,6 +30,9 @@ const headingStyle = {
   }
 
 function Entry() {
+  const {user} = useContext(GlobalContext);
+  const navigate = useNavigate();
+  console.log(user);
   return (
     <Box>
       <CssBaseline />
@@ -44,7 +48,7 @@ function Entry() {
           variant='h6'
           component='h1'
           sx={headingStyle}>
-            Welcome,{}!
+            Welcome, {user.username}!
         </Typography>
         <Typography 
           variant='body1' 

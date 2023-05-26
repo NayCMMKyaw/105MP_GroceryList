@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { Close, Menu } from '@mui/icons-material'
@@ -6,6 +6,7 @@ import { AppBar,Box,IconButton,ListItemText,Toolbar, Typography, Drawer, MenuLis
 import AddShoppingCartRoundedIcon from '@mui/icons-material/AddShoppingCartRounded';
 import '../Nav.css'
 import Logout from './Logout'
+import { GlobalContext } from '../context/GlobalContext'
 
 const drawerWidth = 300;
 const logoStyle = {
@@ -19,6 +20,7 @@ const logoStyle = {
 function Nav() {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [open, setOpen] = useState(false);
+    const { user } = useContext(GlobalContext);
 
     const handleDrawerToggle = () => {
         setMobileOpen((prevState) => !prevState);
@@ -48,8 +50,6 @@ function Nav() {
                 }}
             >
                 <NavLink to='/home'>Home</NavLink>
-                
-                {/* implement direct to login when user not loggedin */}
                 <NavLink to='/mylist'>My List</NavLink>
             </Box>
             <Box 
@@ -58,17 +58,24 @@ function Nav() {
                     mt:0.5,
                 }}
             >
-                <NavLink style={{ color: '#00b2ca' }} to='/login'>Login</NavLink>
+                {user ? (
+                    <Box>
+                        <NavLink 
+                            style={{ color: '#00b2ca', textDecoration: 'none' }} 
+                            onClick={handleClickToggle}
+                        >       
+                            Logout
+                        </NavLink>
+                        <Logout open={open} setOpen={setOpen}/>
+                    </Box>
+                ) : (
+                    <NavLink style={{ color: '#00b2ca' }} to='/login'>Login</NavLink>
+                )}
+                
 
                 {/* Implement Logout when get user cookie */}
 
-                {/* <NavLink 
-                    style={{ color: '#00b2ca', textDecoration: 'none' }} 
-                    onClick={handleClickToggle}
-                >
-                    Logout
-                </NavLink>
-                <Logout open={open} setOpen={setOpen}/> */}
+                
             </Box>
 
             {/* hamburger menu & drawer */}

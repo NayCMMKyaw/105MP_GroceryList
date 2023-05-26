@@ -1,10 +1,13 @@
 import { Box, Dialog, DialogTitle, Button, DialogActions } from '@mui/material'
-import React from 'react'
+import React, { useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import { GlobalContext } from '../context/GlobalContext';
+import Cookies from 'js-cookie';
+import Axios from './axios_client';
 
 const modalWrapper = {
   background: 'rgba(255, 255, 255, 0.98)',
@@ -27,9 +30,21 @@ const MyButton = styled(Button)({
 
 function Logout({open, setOpen}) {
 
+const { setUser } = useContext(GlobalContext);
 const handleClose = () => setOpen(false);
 const navigate = useNavigate();
+const handleLogout = async () => {
+  setUser();
+  try {
+    await Axios.get('/logout')
+    Cookies.remove('UserToken');
+    navigate('/home');
+    // dispatchEvent({ type: type.USER_LOGOUT })
+} catch (error) {
+    console.log(error)
+}
 
+}
   return (
     <Box>
         <Dialog
@@ -45,7 +60,7 @@ const navigate = useNavigate();
             </DialogTitle>
             <DialogActions>
                 <MyButton onClick={handleClose}>Cancel</MyButton>
-                <MyButton onClick={() => navigate('/landing')} autoFocus>Logout</MyButton>
+                <MyButton onClick={handleLogout} autoFocus>Logout</MyButton>
             </DialogActions>
         </Dialog>
 

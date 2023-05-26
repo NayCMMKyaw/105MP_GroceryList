@@ -77,6 +77,8 @@ app.delete('/item', require('./deleteItem.js'));
 
 app.patch('/item', require('./editItem.js'));
 
+app.get('/logout', require('./logout.js'));
+
 app.listen(port, () => {
     console.log(`App is listening on http://localhost:${port}`);
 });

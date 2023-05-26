@@ -104,6 +104,7 @@ function Login() {
           severity:'success'
         });
         console.log(user);
+        navigate('/mylist');
       }
     } catch (e) {
       setEmail('');
@@ -120,9 +121,6 @@ function Login() {
         severity:'error',
       });
     }
-    if (user) {
-      navigate('/mylist');
-    }
   };
 
   const generatekey = () => {
@@ -130,7 +128,7 @@ function Login() {
   };
 
   return (
-    <Box sx={{ backgroundColor: 'rgba(255, 245, 237, 0.5)', height: '100vh' }}>
+    <Box sx={{ backgroundColor: 'rgba(255, 245, 237, 0.5)', height: '100%' }}>
       <CssBaseline />
       <Box sx={{ 
         display: 'flex',

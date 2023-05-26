@@ -141,7 +141,12 @@ function MyList() {
             </Box>  
           </Box>
           {/* Render ToBuy into ItemList */}
-          {items.map((item)=>{
+          {user ? (
+            items.length === 0 ? (
+              <Typography>Add items</Typography>
+            ) : (
+              <Box>
+                {items.map((item)=>{
             return(
               <ItemList 
                 item={item}
@@ -151,6 +156,12 @@ function MyList() {
               />
             )
           })}
+              </Box> 
+            )
+          ) : (
+            <Typography>Please log in</Typography>
+          )}
+          
         </Box>
         {status ? (
           <SnackBarMessage key={generateKey()} open={status.open} severity={status.severity} message={status.msg} />
