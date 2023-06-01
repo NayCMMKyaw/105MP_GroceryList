@@ -53,15 +53,34 @@ const headingStyle = {
 
 function MyList() {
   const [items, setItems] = useState([]);
-  const {status, setStatus, user} = useContext(GlobalContext);
+  const {status, setStatus, user, setUser} = useContext(GlobalContext);
   const [toBuyInput, setToBuyInput] = useState("");
 
   useEffect(() => {
-    // Fetch the initial list from the backend when the component renders
-    Axios.get('/items')
-    .then((response)=>{setItems(response.data.items)})
-    .catch((error)=>{console.error('Error getting items', error)});
-  }, [user]);
+    const fetchData = async () => {
+      try {
+        const response = await Axios.get('/me');
+        setUser(response.data.user);
+      } catch (error) {
+        console.error('Error getting user', error);
+      }
+    };
+  
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        const response = await Axios.get('/items');
+        setItems(response.data.items);
+      } catch (error) {
+        console.error('Error getting items', error);
+      }
+    };
+  
+    fetchItems();
+  }, [user, items]);
 
 
 //when Additem button is clicked

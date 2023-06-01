@@ -10,6 +10,7 @@ export const GlobalContextProvider = ({ children }) => {
     const [status, setStatus] = useState('');
     const [user, setUser] = useState();
 
+
     //Create an object with global state variables to be used
     const globalState = {
         status,
