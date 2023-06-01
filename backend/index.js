@@ -73,7 +73,7 @@ app.get('/items', require('./getAllLists.js'));
 
 app.post('/item', jsonParser, require('./createItem.js'));
 
-app.delete('/item', require('./deleteItem.js'));
+app.delete('/item/:id', require('./deleteItem.js'));
 
 app.patch('/item', require('./editItem.js'));
 

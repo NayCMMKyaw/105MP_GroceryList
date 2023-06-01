@@ -7,6 +7,7 @@ import DoneRoundedIcon from '@mui/icons-material/DoneRounded';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 import { GlobalContext } from '../context/GlobalContext';
 import Axios from './axios_client';
+import { AxiosError } from 'axios';
 
 const listWrapper = {
   display: 'flex', 
@@ -22,11 +23,12 @@ const editTextbox = {
   borderRadius: "5px",
 }
 
-function ItemList({ item, setItems =()=>{} }) {
+function ItemList({ item, items, setItems =()=>{} }) {
 
   const [editMode, setEditMode] = useState(false);
   const [newItem, setNewItem] = useState(item);
-  const { status, setStatus } = useContext(GlobalContext);
+  const [targetItem, setTargetItem] = useState(item);
+  const { setStatus } = useContext(GlobalContext);
   
   const handleEditToggle = () => {
     setEditMode((prevState) => !prevState);
@@ -64,7 +66,32 @@ function ItemList({ item, setItems =()=>{} }) {
       }
     }
   }
-
+//delete item
+const handleDelete = async () => {
+  try {
+    setTargetItem(item);
+    const response = await Axios.delete(`/item/${targetItem.id}`);
+    if(response.data.success){
+      setStatus({
+        severity: 'success',
+        msg: 'Deleted item successfully'
+      });
+      setItems(items && items.filter((i) => i.id !== targetItem.id));
+    }
+  } catch (error) {
+    if (error instanceof AxiosError && error.response) {
+      setStatus({
+        severity: 'error',
+        msg: error.response.data.error
+      });
+    } else {
+      setStatus ({
+        severity: 'error',
+        msg: error.message
+      });
+    }
+  }
+}
 const handleCheck =(e)=>{
   if(e.target.checked){
 
@@ -94,17 +121,17 @@ const handleCheck =(e)=>{
       ) : (
         <Box sx={listWrapper}>
           <Checkbox  sx={{color:'#00b2ca'}}/>
-        <Typography 
-        variant='body1' 
-        component='p'
-        >
-          {item.name}
-        </Typography>
-        <Box sx={{ flexGrow: 1}}></Box>
-        <Box sx={{ display: 'flex', gap: '10px', mt: '5px',}}>
-            <EditOutlinedIcon onClick={handleEditToggle} sx={{color: '#1d4e89', cursor: 'pointer'}}/>
-            <DeleteOutlinedIcon sx={{color: '#1d4e89', cursor: 'pointer'}}/>
-        </Box>
+          <Typography 
+          variant='body1' 
+          component='p'
+          >
+            {item.name}
+          </Typography>
+          <Box sx={{ flexGrow: 1}}></Box>
+          <Box sx={{ display: 'flex', gap: '10px', mt: '5px',}}>
+              <EditOutlinedIcon onClick={handleEditToggle} sx={{color: '#1d4e89', cursor: 'pointer'}}/>
+              <DeleteOutlinedIcon onClick={handleDelete} sx={{color: '#1d4e89', cursor: 'pointer'}}/>
+          </Box>
         </Box>
       )}
     </Box>

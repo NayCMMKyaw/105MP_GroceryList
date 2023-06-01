@@ -1,7 +1,7 @@
 module.exports = (req, res) => {
-    const { itemId } = req.body;
+    const { id } = req.params;
 
-    connection.query("DELETE FROM items WHERE id = ?", [itemId], (err, rows) => {
+    connection.query("DELETE FROM items WHERE id = ?", [id], (err, rows) => {
         if(err) {
             return res.json({
                 success: false,
@@ -12,9 +12,7 @@ module.exports = (req, res) => {
             if (rows) {
                 res.json({
                     success: true,
-                    data: {
-                        message: "Item deleted"
-                    },
+                    message: "Item deleted"
                 });
             }
         }
