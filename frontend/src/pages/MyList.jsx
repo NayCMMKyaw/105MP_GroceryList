@@ -182,9 +182,9 @@ function MyList() {
           )}
           
         </Box>
-        {status ? (
+        {/* {status ? (
           <SnackBarMessage key={generateKey()} open={status.open} severity={status.severity} message={status.msg} />
-        ) : null}
+        ) : null} */}
       
     </div>
   )

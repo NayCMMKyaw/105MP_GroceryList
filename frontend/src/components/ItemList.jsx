@@ -5,6 +5,7 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import DoneRoundedIcon from '@mui/icons-material/DoneRounded';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
+import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import { GlobalContext } from '../context/GlobalContext';
 import Axios from './axios_client';
 import { AxiosError } from 'axios';
@@ -29,6 +30,11 @@ function ItemList({ item, items, setItems =()=>{} }) {
   const [newItem, setNewItem] = useState(item);
   const [targetItem, setTargetItem] = useState(item);
   const { setStatus } = useContext(GlobalContext);
+  const [checked, setChecked] = useState(false);
+
+  const handleChecked = (event) => {
+    setChecked(event.target.checked);
+  };
   
   const handleEditToggle = () => {
     setEditMode((prevState) => !prevState);
@@ -120,8 +126,15 @@ const handleCheck =(e)=>{
       </Box>
       ) : (
         <Box sx={listWrapper}>
-          <Checkbox  sx={{color:'#00b2ca'}}/>
+          <Checkbox 
+          checked={checked}
+          onChange={handleChecked}
+          checkedIcon={<CheckRoundedIcon />} 
+          sx={{color:'#00b2ca'}}/>
           <Typography 
+          style={{
+            textDecoration: checked ? 'line-through' : 'none'
+          }}
           variant='body1' 
           component='p'
           >
