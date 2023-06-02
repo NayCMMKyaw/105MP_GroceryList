@@ -32,12 +32,39 @@ function ItemList({ item, items, setItems =()=>{} }) {
   const [newItem, setNewItem] = useState(item);
   const [targetItem, setTargetItem] = useState(item);
   const { setStatus } = useContext(GlobalContext);
-  const [checked, setChecked] = useState(false);
+  const [bought, setBought] = useState(Boolean(item.bought));
 
-  const handleChecked = (event) => {
-    setChecked(event.target.checked);
+  const handleChecked = async(e) => {
+    // setChecked(event.target.checked);
+    setBought(!bought);
+    setNewItem((prevItem) => ({
+      ...prevItem,
+      [e.target.name]: !(e.target.checked),
+    }));
+    try{
+      const response = await Axios.patch('/item/check', newItem);
+      if(response.data.success){
+        setStatus({
+          severity: 'success',
+            msg: 'Updated item successfully'
+        });
+        setItems((prev)=> prev.map((i) => (i.id===newItem.id ? response.data.data: i)));
+      }
+    }
+    catch(error){
+      if ( error instanceof AxiosError && error.response) {
+        setStatus({
+          severity: 'error', 
+          msg: error.response.data.error
+        });
+      }else {
+        setStatus({
+          severity: 'error',
+          msg: error.message
+        })
+      }
+    }
   };
-  
   const handleEditToggle = () => {
     setEditMode((prevState) => !prevState);
   };
@@ -123,13 +150,15 @@ const handleDelete = async () => {
       ) : (
         <Box sx={listWrapper}>
           <Checkbox 
-          checked={checked}
+          checked={bought}
           onChange={handleChecked}
+          name='bought'
           checkedIcon={<CheckRoundedIcon />} 
-          sx={{color:'#00b2ca'}}/>
+          sx={{color:'#00b2ca'}}
+          />
           <Typography 
           style={{
-            textDecoration: checked ? 'line-through' : 'none'
+            textDecoration: bought ? 'line-through' : 'none'
           }}
           variant='body1' 
           component='p'

@@ -77,6 +77,8 @@ app.delete('/item/:id', require('./deleteItem.js'));
 
 app.patch('/item', require('./editItem.js'));
 
+app.patch('/item/check', require('./checkItem.js'));
+
 app.get('/logout', require('./logout.js'));
 
 app.listen(port, () => {
