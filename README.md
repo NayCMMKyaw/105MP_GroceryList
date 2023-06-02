@@ -231,29 +231,7 @@ Response
 ###### Status Code
 ` 200`  success
 
-| Parameter | Type | Description |
-|----------|:-------------:|:------|
-| id | string | id of item |
-| name | string | item name |
-| user_id | string | id of user |
-| bought | string | checked item |
-| updatedAt | DateTime | latest updated time |
-| createdAt | DateTime | create Time |
-
-Example
-```
-[
-    {
-        "id" : "1",
-        "name" : "carrot",
-        "user_id" : "1",
-        "bought" : "0",
-        "updatedAt" : "2023-04-25T14:58:58.264Z",
-        "createdAt" : "2023-04-25T14:58:58.264Z",
-    }
-]
-
-```
+no response body
 
 
 ### Delete Item
@@ -277,3 +255,23 @@ Response
 
 no response body
 
+### Check Item
+
+#### URL
+`PATCH /item/check`
+
+ 
+#### Request Body 
+| Parameter | Type | Description |
+|----------|:-------------:|:------|
+| id | string | id of item |
+| bought | string | item is bought |
+
+
+#### Success
+Response
+
+###### Status Code
+` 200`  success
+
+no response body
