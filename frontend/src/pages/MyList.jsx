@@ -1,7 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { styled } from '@mui/material/styles'
 import { Typography, Box, TextField, Button, CssBaseline } from '@mui/material'
-// import { createTheme, ThemeProvider } from '@mui/material/styles'
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import ItemList from '../components/ItemList';
 import Nav from '../components/Nav';
@@ -165,16 +164,18 @@ function MyList() {
               <Typography>Add items</Typography>
             ) : (
               <Box>
-                {items.map((item)=>{
-            return(
-              <ItemList 
-                item={item}
-                key={item.id}
-                setState={setItems}
-                state={items}
-              />
-            )
-          })}
+                {items.map((item, index)=>{
+                  // console.log(item);
+                return(
+                  <div key={item.id ? item.id : index}>
+                    <ItemList 
+                    item={item}
+                    setState={setItems}
+                    state={items}
+                  />
+                  </div>
+                  )
+                })}
               </Box> 
             )
           ) : (

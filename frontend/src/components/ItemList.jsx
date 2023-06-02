@@ -24,6 +24,8 @@ const editTextbox = {
   borderRadius: "5px",
 }
 
+const Iconstyle = {color: '#1d4e89', cursor: 'pointer'}
+
 function ItemList({ item, items, setItems =()=>{} }) {
 
   const [editMode, setEditMode] = useState(false);
@@ -98,12 +100,6 @@ const handleDelete = async () => {
     }
   }
 }
-const handleCheck =(e)=>{
-  if(e.target.checked){
-
-  }
-}
-
   return (
     
     <Box >
@@ -120,8 +116,8 @@ const handleCheck =(e)=>{
         />
         <Box sx={{ flexGrow: 1}}></Box>
       <Box sx={{ display: 'flex', gap: '10px', mt: '5px',}}>
-          <DoneRoundedIcon onClick={handleEdit} sx={{color: '#1d4e89', cursor: 'pointer'}}/>
-          <ClearRoundedIcon onClick={handleEditToggle} sx={{color: '#1d4e89', cursor: 'pointer'}}/>
+          <DoneRoundedIcon onClick={handleEdit} sx={Iconstyle}/>
+          <ClearRoundedIcon onClick={handleEditToggle} sx={Iconstyle}/>
       </Box>
       </Box>
       ) : (
@@ -142,8 +138,8 @@ const handleCheck =(e)=>{
           </Typography>
           <Box sx={{ flexGrow: 1}}></Box>
           <Box sx={{ display: 'flex', gap: '10px', mt: '5px',}}>
-              <EditOutlinedIcon onClick={handleEditToggle} sx={{color: '#1d4e89', cursor: 'pointer'}}/>
-              <DeleteOutlinedIcon onClick={handleDelete} sx={{color: '#1d4e89', cursor: 'pointer'}}/>
+              <EditOutlinedIcon onClick={handleEditToggle} sx={Iconstyle}/>
+              <DeleteOutlinedIcon onClick={handleDelete} sx={Iconstyle}/>
           </Box>
         </Box>
       )}

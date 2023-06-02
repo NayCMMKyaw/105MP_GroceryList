@@ -103,7 +103,6 @@ function Login() {
           msg:response.data.message,
           severity:'success'
         });
-        console.log(user);
         navigate('/mylist');
       }
     } catch (e) {

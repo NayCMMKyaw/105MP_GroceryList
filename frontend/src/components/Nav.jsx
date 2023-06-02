@@ -58,6 +58,7 @@ function Nav() {
                     mt:0.5,
                 }}
             >
+                {/* Implement Logout when get user cookie */}
                 {user ? (
                     <Box>
                         <NavLink 
@@ -70,12 +71,7 @@ function Nav() {
                     </Box>
                 ) : (
                     <NavLink style={{ color: '#00b2ca' }} to='/login'>Login</NavLink>
-                )}
-                
-
-                {/* Implement Logout when get user cookie */}
-
-                
+                )}  
             </Box>
 
             {/* hamburger menu & drawer */}
@@ -116,16 +112,25 @@ function Nav() {
                     <NavLink to='/home'>
                         <ListItemText primary='Home' />
                     </NavLink>
-                    
-                    {/* implement direct to login when user not loggedin */}
+
                     <NavLink to='/mylist'>
                         <ListItemText primary='My List' />
                     </NavLink>
 
                     {/* Implement Logout when get user cookie */}
-                    <NavLink style={{ color: '#00b2ca', textDecoration: 'none'  }}  onClick={handleClickToggle}>
-                        <ListItemText primary='Logout' />
-                    </NavLink>
+                    {user ? (
+                        <Box>
+                            <NavLink style={{ color: '#00b2ca', textDecoration: 'none'  }}  onClick={handleClickToggle}>
+                                <ListItemText primary='Logout' />
+                            </NavLink>
+                            <Logout open={open} setOpen={setOpen}/>
+                        </Box>
+                    ) : (
+                        <NavLink style={{ color: '#00b2ca', textDecoration: 'none'  }}  onClick={handleClickToggle} to='/login'>
+                            <ListItemText primary='Login' />
+                        </NavLink>
+                    )}
+                    
                 </MenuList>
             </div>
         </Drawer>
